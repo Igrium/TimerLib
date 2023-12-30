@@ -3,15 +3,15 @@
 	"id": "timerlib",
 	"version": "${version}",
 	"name": "TimerLib",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A library mod for creating 'timeouts' without interfering with the game.",
 	"authors": [
-		"Me!"
+		"Igrium"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/timerlib/icon.png",
 	"environment": "*",
 	"entrypoints": {
