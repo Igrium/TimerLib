@@ -16,7 +16,7 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.igrium.timerlib.TimerLib"
+			"com.igrium.timerlib.test.TimerLib"
 		]
 	},
 	"mixins": [

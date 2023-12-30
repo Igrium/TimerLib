@@ -113,7 +113,7 @@ public final class SimpleTimerProvider implements TimerProvider {
         private final int interval;
         private final Runnable callback;
 
-        private boolean isActive;
+        private boolean isActive = true;
         private int nextExecution;
 
         public SimpleIntervalHandle(int interval, int firstExecution, Runnable callback) {
@@ -140,7 +140,7 @@ public final class SimpleTimerProvider implements TimerProvider {
         }
         
         void tick(int time) {
-            if (nextExecution >= time) {
+            if (time >= nextExecution) {
                 callback.run();
                 nextExecution = time + interval;
             }
