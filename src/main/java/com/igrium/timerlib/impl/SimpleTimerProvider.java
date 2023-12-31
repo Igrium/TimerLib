@@ -2,7 +2,7 @@ package com.igrium.timerlib.impl;
 
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.function.IntSupplier;
+import java.util.function.LongSupplier;
 
 import com.igrium.timerlib.api.TimerProvider;
 import com.igrium.timerlib.api.handle.IntervalHandle;
@@ -10,12 +10,12 @@ import com.igrium.timerlib.api.handle.TimeoutHandle;
 
 public final class SimpleTimerProvider implements TimerProvider {
     private final TimerUnit unit;
-    private final IntSupplier timeSupplier;
+    private final LongSupplier timeSupplier;
 
     private final Deque<SimpleTimeoutHandle> timeouts = new ConcurrentLinkedDeque<>();
     private final Deque<SimpleIntervalHandle> intervals = new ConcurrentLinkedDeque<>();
 
-    public SimpleTimerProvider(TimerUnit unit, IntSupplier timeSupplier) {
+    public SimpleTimerProvider(TimerUnit unit, LongSupplier timeSupplier) {
         this.unit = unit;
         this.timeSupplier = timeSupplier;
     }
@@ -26,12 +26,12 @@ public final class SimpleTimerProvider implements TimerProvider {
     }
 
     public void tick() {
-        int time = timeSupplier.getAsInt();
+        long time = timeSupplier.getAsLong();
         tickTimeouts(time);
         tickIntervals(time);
     }
 
-    private void tickTimeouts(int time) {
+    private void tickTimeouts(long time) {
         var iter = timeouts.iterator();
         SimpleTimeoutHandle handle;
         while (iter.hasNext()) {
@@ -40,16 +40,16 @@ public final class SimpleTimerProvider implements TimerProvider {
         }
     }
 
-    private void tickIntervals(int time) {
+    private void tickIntervals(long time) {
         for (SimpleIntervalHandle handle : intervals) {
             handle.tick(time);
         }
     }
 
     @Override
-    public TimeoutHandle setTimeout(int delay, Runnable callback) throws IllegalArgumentException {
+    public synchronized TimeoutHandle setTimeout(int delay, Runnable callback) throws IllegalArgumentException {
         if (delay < 0) throw new IllegalArgumentException("Delay cannot be negative!");
-        int time = timeSupplier.getAsInt();
+        long time = timeSupplier.getAsLong();
 
         SimpleTimeoutHandle handle = new SimpleTimeoutHandle(time + delay, callback);
         timeouts.add(handle);
@@ -58,24 +58,36 @@ public final class SimpleTimerProvider implements TimerProvider {
     }
 
     @Override
-    public IntervalHandle setInterval(int delay, Runnable callback) throws IllegalArgumentException {
+    public synchronized IntervalHandle setInterval(int delay, Runnable callback) throws IllegalArgumentException {
         if (delay <= 0) throw new IllegalArgumentException("Delay must be at least 1.");
-        int firstExecution = timeSupplier.getAsInt() + delay;
+        long firstExecution = timeSupplier.getAsLong() + delay;
 
         SimpleIntervalHandle handle = new SimpleIntervalHandle(delay, firstExecution, callback);
         intervals.add(handle);
         return handle;
     }
 
+    public synchronized void clear() {
+        for (SimpleTimeoutHandle handle : timeouts) {
+            handle.isActive = false;
+        }
+        timeouts.clear();
+
+        for (SimpleIntervalHandle handle : intervals) {
+            handle.isActive = false;
+        }
+        intervals.clear();
+    }
+
     private class SimpleTimeoutHandle implements TimeoutHandle {
 
-        private final int executionTime;
+        private final long executionTime;
         private final Runnable callback;
 
         private boolean isActive = true;
         private boolean isExpired = false;
 
-        public SimpleTimeoutHandle(int executionTime, Runnable callback) {
+        public SimpleTimeoutHandle(long executionTime, Runnable callback) {
             this.executionTime = executionTime;
             this.callback = callback;
         }
@@ -97,7 +109,7 @@ public final class SimpleTimerProvider implements TimerProvider {
             return isExpired;
         }
         
-        boolean tick(int time) {
+        boolean tick(long time) {
             if (time >= executionTime) {
                 callback.run();
                 isExpired = true;
@@ -119,9 +131,9 @@ public final class SimpleTimerProvider implements TimerProvider {
         private final Runnable callback;
 
         private boolean isActive = true;
-        private int nextExecution;
+        private long nextExecution;
 
-        public SimpleIntervalHandle(int interval, int firstExecution, Runnable callback) {
+        public SimpleIntervalHandle(int interval, long firstExecution, Runnable callback) {
             this.interval = interval;
             this.nextExecution = firstExecution;
             this.callback = callback;
@@ -144,7 +156,7 @@ public final class SimpleTimerProvider implements TimerProvider {
             return interval;
         }
         
-        void tick(int time) {
+        void tick(long time) {
             if (time >= nextExecution) {
                 callback.run();
                 nextExecution = time + interval;

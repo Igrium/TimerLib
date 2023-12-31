@@ -3,7 +3,8 @@
 	"package": "com.igrium.timerlib.impl.client.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-        "ClientWorldMixin"
+        "ClientWorldMixin",
+		"MinecraftClientMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

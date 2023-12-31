@@ -26,15 +26,15 @@ public class ClientTimerCommand {
             literal("interval").then(
                 literal("start").then(
                     argument("duration", IntegerArgumentType.integer(1)).executes(ClientTimerCommand::doInterval)
-                ).then(
-                    literal("stop").executes(ClientTimerCommand::stopInterval)
                 )
+            ).then(
+                literal("stop").executes(ClientTimerCommand::stopInterval)
             )
         ));
     }
 
     private static TimerProvider getProvider(FabricClientCommandSource source) {
-        return ClientTimers.getWorld(source.getWorld());
+        return ClientTimers.getClientFrame(source.getClient());
     }
     
     private static int doTimeout(CommandContext<FabricClientCommandSource> context) {
@@ -57,8 +57,9 @@ public class ClientTimerCommand {
         }
 
         TimerProvider provider = getProvider(context.getSource());
-        provider.setInterval(IntegerArgumentType.getInteger(context, "duration"), () -> {
-            context.getSource().sendFeedback(Text.literal("The timer has expired!"));
+        handle = provider.setInterval(IntegerArgumentType.getInteger(context, "duration"), () -> {
+            // context.getSource().sendFeedback(Text.literal("The timer has expired!"));
+            LogUtils.getLogger().info("The timer has expired!");;
         });
 
         return 1;
