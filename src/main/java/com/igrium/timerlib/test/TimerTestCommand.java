@@ -37,7 +37,7 @@ public class TimerTestCommand {
     }
 
     private static int doTimeout(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        TimerProvider provider = Timers.getEntity(context.getSource().getEntity());
+        TimerProvider provider = Timers.getWorld(context.getSource().getWorld());
         provider.setTimeout(IntegerArgumentType.getInteger(context, "delay"),
                 () -> {
                     context.getSource().sendFeedback(() -> Text.literal("The timeout has timed out!"), false);
@@ -53,7 +53,7 @@ public class TimerTestCommand {
             handle.cancel();
         }
 
-        TimerProvider provider = Timers.getEntity(context.getSource().getEntity());
+        TimerProvider provider = Timers.getWorld(context.getSource().getWorld());
         handle = provider.setInterval(IntegerArgumentType.getInteger(context, "delay"),
                 () -> {
                     context.getSource().sendFeedback(() -> Text.literal("This is an interval!"), false);

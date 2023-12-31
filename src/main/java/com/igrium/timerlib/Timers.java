@@ -5,6 +5,7 @@ import com.igrium.timerlib.impl.TimerProviderHolder;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
 
 /**
  * A universal class for obtaining default timer providers.
@@ -28,5 +29,14 @@ public final class Timers {
      */
     public static TimerProvider getEntity(Entity entity) {
         return ((TimerProviderHolder) entity).getTimerProvider();
+    }
+
+    /**
+     * Get the timer provider belonging to a server world.
+     * @param world Server world to use.
+     * @return The timer provider.
+     */
+    public static TimerProvider getWorld(ServerWorld world) {
+        return ((TimerProviderHolder) world).getTimerProvider();
     }
 }
