@@ -39,4 +39,5 @@ public interface TimerProvider {
      * @throws IllegalArgumentException If <code>delay < 1</code>
      */
     public IntervalHandle setInterval(int delay, Runnable callback) throws IllegalArgumentException;
+    
 }

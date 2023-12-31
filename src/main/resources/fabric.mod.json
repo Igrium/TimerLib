@@ -17,10 +17,17 @@
 	"entrypoints": {
 		"main": [
 			"com.igrium.timerlib.test.TimerLib"
+		],
+		"client": [
+			"com.igrium.timerlib.test.client.TimerLibClient"
 		]
 	},
 	"mixins": [
-		"timerlib.mixins.json"
+		"timerlib.mixins.json",
+		{
+			"config": "timerlib.mixins.client.json",
+			"environment": "client"
+		}
 	],
 	"depends": {
 		"fabricloader": ">=0.15.3",

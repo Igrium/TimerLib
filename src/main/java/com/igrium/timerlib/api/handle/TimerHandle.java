@@ -1,5 +1,7 @@
 package com.igrium.timerlib.api.handle;
 
+import com.igrium.timerlib.api.TimerProvider;
+
 public interface TimerHandle {
     
     /**
@@ -15,4 +17,9 @@ public interface TimerHandle {
      * @throws IllegalStateException If the timer is not active.
      */
     public void cancel() throws IllegalStateException;
+
+    /**
+     * Get the timer provider that this handle belongs to.
+     */
+    public TimerProvider getProvider();
 }

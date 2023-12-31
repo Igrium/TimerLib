@@ -106,6 +106,11 @@ public final class SimpleTimerProvider implements TimerProvider {
                 return false;
             }
         }
+
+        @Override
+        public TimerProvider getProvider() {
+            return SimpleTimerProvider.this;
+        }
     }
 
     private class SimpleIntervalHandle implements IntervalHandle {
@@ -144,6 +149,11 @@ public final class SimpleTimerProvider implements TimerProvider {
                 callback.run();
                 nextExecution = time + interval;
             }
+        }
+
+        @Override
+        public TimerProvider getProvider() {
+            return SimpleTimerProvider.this;
         }
     }
 }
